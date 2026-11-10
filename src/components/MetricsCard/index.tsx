@@ -86,7 +86,7 @@ export function Metrics({ metricsMap, activeModel, burnIn }: MetricsProps) {
           <tr>
             <th scope="col">Model</th>
             {METRIC_HELP.map((h) => (
-              <th scope="col" className="num"><abbr title={h.name}>{h.abbr}</abbr></th>
+              <th key={h.abbr} scope="col" className="num"><abbr title={h.name}>{h.abbr}</abbr></th>
             ))}
           </tr>
         </thead>

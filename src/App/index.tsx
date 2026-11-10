@@ -39,7 +39,10 @@ import type {
   OverlayChartData
 } from '../types';
 
-type SampleDataKey = 'RSXFSN' | 'RSAFSNA' | 'ECOMPCTNSA' | 'custom';
+const SAMPLE_DATA_NAMES = ['RSXFSN', 'RSAFSNA', 'ECOMPCTNSA'] as const;
+
+export type SampleDataKey = typeof SAMPLE_DATA_NAMES[number];
+export type DataInputKey = SampleDataKey | 'custom';
 
 const DEFAULT_CSV_INPUTS: CsvLoadInputs = {
   source: 'RSXFSN.csv',
@@ -49,14 +52,13 @@ const DEFAULT_CSV_INPUTS: CsvLoadInputs = {
   freq: 'MS'
 }
 
-const SAMPLE_NAME_MAP: Record<SampleDataKey, string> = {
+const SAMPLE_DATA_LABELS: Record<SampleDataKey, string> = {
   RSXFSN: 'FRED Retail Data', // Advance Retail Sales: Retail Trade (NSA)
   RSAFSNA: 'FRED Retail and Food Data', // Advance Retail Sales: Retail Trade and Food Services (NSA)
   ECOMPCTNSA: 'FRED E-Commerce Data', // E-Commerce Retail Sales as a Percent of Total Sales (NSA)
-  custom: 'Custom Data'
 }
 
-const SAMPLE_FREQ_MAP: Record<SampleDataKey, string> = {
+const SAMPLE_FREQ_MAP: Record<DataInputKey, string> = {
   RSXFSN: 'MS',
   RSAFSNA: 'MS',
   ECOMPCTNSA: 'QS',
@@ -117,7 +119,7 @@ export default function App() {
   // const { isLoading, fitModels, updateForecasts } = usePyodideWorker();
 
   // Input states
-  const [selectedSampleData, setSelectedSampleData] = useState<SampleDataKey>(DEFAULT_CSV_INPUTS['targetCol'] as SampleDataKey);
+  const [selectedSampleData, setSelectedSampleData] = useState<DataInputKey>(DEFAULT_CSV_INPUTS['targetCol'] as DataInputKey);
   const [customCsvData, setCustomCsvData] = useState<CsvCustomInputs>({filename: '', source: '', isString: true, delimiter: ',', dateCol: '', targetCol: '', freq: 'MS'});
   const [modelFitInputs, setModelFitInputs] = useState<CsvLoadInputs>(DEFAULT_CSV_INPUTS);
   const [activeModelInputs, setActiveModelInputs] = useState<CsvLoadInputs | null>(null);
@@ -175,7 +177,7 @@ export default function App() {
   );
 
   const activeFileName = useMemo(
-    () => selectedSampleData === 'custom' ? customCsvData.filename : `${SAMPLE_NAME_MAP[selectedSampleData]}: ${selectedSampleData}.csv`,
+    () => selectedSampleData === 'custom' ? customCsvData.filename : `${SAMPLE_DATA_LABELS[selectedSampleData]}: ${selectedSampleData}.csv`,
     [activeModelInputs]
   );
 
@@ -362,7 +364,7 @@ export default function App() {
                     value={selectedSampleData}
                     disabled={isRunning || isLoading}
                     onChange={(e) => {
-                      const selectedValue = e.target.value as SampleDataKey;
+                      const selectedValue = e.target.value as DataInputKey;
                       setSelectedSampleData(selectedValue);
                       if (selectedValue === 'custom') {
                         if (!customCsvData) return;
@@ -372,10 +374,10 @@ export default function App() {
                       }                  
                     }}
                   >
-                    <option value='RSXFSN'>{SAMPLE_NAME_MAP['RSXFSN']}</option>
-                    <option value='RSAFSNA'>{SAMPLE_NAME_MAP['RSAFSNA']}</option>
-                    <option value='ECOMPCTNSA'>{SAMPLE_NAME_MAP['ECOMPCTNSA']}</option>
-                    {customCsvData.filename.length > 0 && <option value='custom'>{SAMPLE_NAME_MAP['custom']}: {customCsvData.filename}</option>}
+                    {SAMPLE_DATA_NAMES.map(n => (
+                      <option key={n} value={n}>{SAMPLE_DATA_LABELS[n]}</option>
+                    ))}
+                    {customCsvData.filename.length > 0 && <option value='custom'>Custom Data: {customCsvData.filename}</option>}
                   </select>
                 </div>
               </div>
