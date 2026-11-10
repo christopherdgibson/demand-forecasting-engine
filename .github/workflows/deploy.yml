@@ -1,4 +1,4 @@
-name: Deploy Demand Forecasting Dashboard to GitHub Pages
+name: Deploy Demand Forecasting Engine to GitHub Pages
 
 on:
   push:

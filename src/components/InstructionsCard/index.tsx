@@ -9,7 +9,7 @@ export function InstructionsCard() {
   return (
     <section className="guide-container">
       <div className="guide-header">
-        <h3 className="guide-title">📊 Demand Forecasting Dashboard Guide</h3>
+        <h3 className="guide-title">📊 Demand Forecasting Engine Guide</h3>
         <button
           className="guide-button"
           onClick={() => setIsExpanded((prev) => !prev)}
@@ -33,7 +33,7 @@ export function InstructionsCard() {
       >
         <div className="guide-inner">
           <p className="guide-intro">
-            Welcome to the serverless demand forecasting dashboard! Use this tool to analyze time-series patterns, generate predictions, and experiment with different statistical models entirely in your browser.
+            Welcome to the serverless demand forecasting engine! Use this tool to analyze time-series patterns, generate predictions, and experiment with different statistical models entirely in your browser.
           </p>
 
           <h4 className="guide-subheader">📁 Datasets</h4>

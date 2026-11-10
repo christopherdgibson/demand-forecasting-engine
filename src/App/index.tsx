@@ -291,7 +291,7 @@ export default function App() {
     <ErrorBoundary>
       <div className={'app-container'}>
         <div className={'app-header'}>
-          <h1 className={'title'}>Demand Forecast Dashboard</h1>
+          <h1 className={'title'}>Demand Forecast Engine</h1>
           <div className="app-header-controls">
             <HuePicker value={hues} activePreset={activePreset} onChange={setHues} />
             <SegmentedControl
