@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import '../App/styles.css';
-import { MODEL_TYPES, modelNameMap } from '../types';
+import { MODEL_LABELS, MODEL_TYPES } from '../types';
 import type {CardInputs, ControlsBase, ForecastChartInputs, ForecastHorizonKeys, ModelFailures, ModelType } from '../types';
 
 interface ControlsProps extends ControlsBase {
@@ -89,7 +89,7 @@ export function ControlPanel({inputs, timeHorizonCards, selectedModel, activeMod
               return (
                 <option key={m} value={m} disabled={failed}
                   title={failed && modelFailures ? modelFailures[m]?.message : undefined}>
-                  {modelNameMap[m]}{failed ? ' (unavailable)' : ''}
+                  {MODEL_LABELS[m]}{failed ? ' (unavailable)' : ''}
                 </option>
               );
             })}
@@ -100,11 +100,11 @@ export function ControlPanel({inputs, timeHorizonCards, selectedModel, activeMod
               {failedModels
                 .map((m) =>
                   modelFailures[m]?.type === 'fit'
-                    ? `${modelNameMap[m]} couldn't be fitted to this data.`
-                    : `Forecasts could not be produced for ${modelNameMap[m]}.`
+                    ? `${MODEL_LABELS[m]} couldn't be fitted to this data.`
+                    : `Forecasts could not be produced for ${MODEL_LABELS[m]}.`
                 )
                 .join(' ')}
-              {activeModel !== selectedModel && ` Showing ${modelNameMap[activeModel]} instead.`}
+              {activeModel !== selectedModel && ` Showing ${MODEL_LABELS[activeModel]} instead.`}
             </p>
           )}
         </div>

@@ -151,6 +151,7 @@ def fit_models(source,
 
     sp = get_seasonal_period(freq)
     seasonal = sp > 1
+    burn = 1 + (sp if seasonal else 0)
     models, metrics, failures = {}, {}, {}
 
     # 1. Fit ETS Model
@@ -164,8 +165,7 @@ def fit_models(source,
         metrics["ets"] = {
             "aic": round(float(ets_fit.aic), 2),
             "bic": round(float(ets_fit.bic), 2),
-            "mape": round(float(np.mean(np.abs(ets_resid / actuals))), 4),
-            "rmse": round(float(np.sqrt(np.mean(ets_resid ** 2))), 2)
+            "errors": error_metrics(actuals.loc[ets_resid.index], ets_resid, burn)
         }
     except Exception as e:
         failures["ets"] = f"{type(e).__name__}: {e}"
@@ -181,8 +181,7 @@ def fit_models(source,
         metrics["sarimax"] = {
             "aic": round(float(sarimax_fit.aic), 2),
             "bic": round(float(sarimax_fit.bic), 2),
-            "mape": round(float(np.mean(np.abs(sarimax_resid / actuals))), 4),
-            "rmse": round(float(np.sqrt(np.mean(sarimax_resid ** 2))), 2)
+            "errors": error_metrics(actuals.loc[sarimax_resid.index], sarimax_resid, burn)
         }
 
     except Exception as e:
@@ -195,11 +194,12 @@ def fit_models(source,
         
         # Extract metrics or residuals
         theta_rmse = float(np.sqrt(theta_fit.sigma2))
+        theta_stats = {"mape": "N/A", # Omit or approximate since fitted values aren't stored
+                       "rmse": round(theta_rmse, 2)}
         metrics["theta"] = {
             "aic": "N/A", # Theta model uses alternative error criteria
             "bic": "N/A",
-            "mape": "N/A",  # Omit or approximate since fitted values aren't stored
-            "rmse": round(theta_rmse, 2)
+            "errors": {"all": theta_stats, "burnIn": theta_stats},
         }
         
     except Exception as e:
@@ -236,6 +236,22 @@ def fit_models(source,
         "metrics": metrics,
         "failures": failures,
         "notes": notes
+    }
+
+def error_metrics(actuals, resid, burn):
+    def calc(a, r):
+        if len(r) == 0:
+            return {"mape": "N/A", "rmse": "N/A"}
+        nz = a != 0
+        mape = float(np.mean(np.abs(r[nz] / a[nz]))) if nz.any() else None
+        return {
+            "mape": round(mape, 4) if mape is not None else "N/A",
+            "rmse": round(float(np.sqrt(np.mean(r ** 2))), 2),
+        }
+    a = actuals.loc[resid.index]
+    return {
+        "all": calc(a, resid),
+        "burnIn": calc(a.iloc[burn:], resid.iloc[burn:]),
     }
 
 def generate_forecasts(forecast_steps=12, alpha=0.05):

@@ -1,5 +1,5 @@
 export const MODEL_TYPES = ['ets', 'sarimax', 'theta'] as const;
-export const modelNameMap: Record<ModelType, string> = {
+export const MODEL_LABELS: Record<ModelType, string> = {
   ets: 'ETS',
   sarimax: 'SARIMAX',
   theta: 'Theta'
@@ -83,11 +83,18 @@ export interface ColorStyle {
   opacity: number;
 }
 
+export interface ErrorStats {
+  mape: number | null;
+  rmse: number | null;
+}
+
 export interface ModelMetrics {
   aic: number | null;
   bic: number | null;
-  mape: number | null;
-  rmse: number | null;
+  errors: {
+    all: ErrorStats;
+    burnIn: ErrorStats;
+  };
 }
 
 export type ForecastResults = Record<ModelType, Array<DemandProps>>;

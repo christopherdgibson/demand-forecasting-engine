@@ -20,7 +20,7 @@ import { adjustHistory, convertChartData, reshapeRows, shallowEqual } from '../u
 
 import './styles.css'
 
-import { MODEL_TYPES, modelNameMap } from '../types';
+import { MODEL_LABELS, MODEL_TYPES } from '../types';
 import type {
   CardInputs,
   CsvCustomInputs,
@@ -61,6 +61,30 @@ const SAMPLE_FREQ_MAP: Record<SampleDataKey, string> = {
   RSAFSNA: 'MS',
   ECOMPCTNSA: 'QS',
   custom: 'MS' // Default custom to monthly, consistent with CsvUploader
+}
+
+const returnBurnIn = (freq?: string): number => {
+  if (!freq) return 0;
+
+  const sp = freqPeriodsMap(freq);
+  if (sp > 1) return sp + 1;
+  else return 1;
+}
+
+const freqPeriodsMap = (freq: string) => {
+  freq = freq.toUpperCase();
+  if (freq.startsWith('M'))
+    return 12;
+  else if (freq.startsWith('Y'))
+    return 1;
+  else if (freq.startsWith('Q'))
+    return 4
+  else if (freq.startsWith('W'))
+    return 52
+  else if (freq.startsWith('D'))
+    return 7  // 7-day weekly cycle is safest for daily; 365 can break statsmodels
+  else
+    return 1  // Default fallback (no seasonality)
 }
 
 const DEFAULT_FORECAST_STEPS = 12;
@@ -270,6 +294,7 @@ export default function App() {
             <HuePicker value={hues} activePreset={activePreset} onChange={setHues} />
             <SegmentedControl
               label="Theme"
+              legendText="Theme"
               value={activeTheme}
               onChange={setActiveTheme}
               options={[
@@ -380,7 +405,7 @@ export default function App() {
           </div>
         </div>
 
-        <Metrics metrics={metrics} />
+        <Metrics metricsMap={metricsMap} activeModel={activeModel} burnIn={returnBurnIn(activeModelInputs?.freq)}/>
 
         {chartData && (
           <>
@@ -442,7 +467,7 @@ export default function App() {
             <h2 className="section-heading">Demand Forecast</h2>
             {chartData && (
               <ForecastChart
-                title={`Demand Trajectory & 12-Month Forecast (${modelNameMap[activeModel]} model)`}
+                title={`Demand Trajectory & 12-Month Forecast (${MODEL_LABELS[activeModel]} model)`}
                 chartData={chartData}
                 dataHistorical={"historical"}
                 dataForecast={"forecast"}

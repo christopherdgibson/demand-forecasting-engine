@@ -7,25 +7,27 @@ interface SegmentedControlProps<T extends string> {
   options: { value: T; label: string }[];
   value: T;
   onChange: (value: T) => void;
+  legendText?: string;
 }
 
 export function SegmentedControl<T extends string>({
-  label, options, value, onChange,
+  label, options, value, onChange, legendText
 }: SegmentedControlProps<T>) {
   const name = useId();
 
   return (
     <div className="segmented" role="radiogroup" aria-label={label}>
-      {options.map((o) => (
-        <label key={o.value} className="segmented-option">
+    {legendText && <legend className="sr-only">{legendText}</legend>}
+      {options.map((op) => (
+        <label key={op.value} className="segmented-option">
           <input
             type="radio"
             name={name}
-            value={o.value}
-            checked={value === o.value}
-            onChange={() => onChange(o.value)}
+            value={op.value}
+            checked={value === op.value}
+            onChange={() => onChange(op.value)}
           />
-          <span>{o.label}</span>
+          <span>{op.label}</span>
         </label>
       ))}
     </div>
