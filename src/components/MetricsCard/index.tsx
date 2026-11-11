@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { DataGlossary } from '../DataGlossary';
 import { SegmentedControl } from '../SegmentedControl';
 import { formatNumber, formatPercentage } from '../../utils/numberUtils';
 
 import './styles.css';
-import { MODEL_LABELS, MODEL_TYPES, type ModelMetrics, ModelType, ErrorStats } from '../../types';
+import { MODEL_LABELS, MODEL_TYPES, type DataInfo, ErrorStats, ModelMetrics, ModelType } from '../../types';
 
 type MetricWindow = 'burnIn' | 'all';
 
@@ -15,28 +16,28 @@ interface MetricsProps {
   burnIn: number;
 }
 
-const METRIC_HELP = [
-  {
-    abbr: 'AIC',
+const METRIC_KEYS = ['AIC', 'BIC', 'MAPE', 'RMSE'] as const;
+
+type MetricKeys = typeof METRIC_KEYS[number];
+
+const METRIC_DATA_INFO: Record<MetricKeys, DataInfo> = {
+  AIC: {
     name: 'Akaike information criterion',
-    text: 'How well the model fits the data, with a penalty for each parameter it uses. Lower is better. Only meaningful for comparing models fitted to the same data, and not strictly comparable between ETS and SARIMAX.',
+    text: 'How well the model fits the data, with a penalty for each parameter it uses. Lower is better. Only meaningful for comparing models fitted to the same data, and not strictly comparable between ETS and SARIMAX.'
   },
-  {
-    abbr: 'BIC',
+  BIC: {
     name: 'Bayesian information criterion',
-    text: 'Like AIC, but it penalises complexity more heavily, so it favours simpler models as the dataset grows. Lower is better.',
+    text: 'Like AIC, but it penalises complexity more heavily, so it favours simpler models as the dataset grows. Lower is better.'
   },
-  {
-    abbr: 'MAPE',
+  MAPE: {
     name: 'Mean absolute percentage error',
-    text: 'The average size of the error as a percentage of the actual value, so it is independent of scale. Periods where the actual value is zero are skipped.',
+    text: 'The average size of the error as a percentage of the actual value, so it is independent of scale. Periods where the actual value is zero are skipped.'
   },
-  {
-    abbr: 'RMSE',
+  RMSE: {
     name: 'Root mean squared error',
-    text: 'The typical size of the error in the same units as your data. It penalises large misses more than small ones. Lower is better.',
-  },
-] as const;
+    text: 'The typical size of the error in the same units as your data. It penalises large misses more than small ones. Lower is better.'
+  }
+} as const;
 
 function errorsFor(mm: ModelMetrics | undefined, win: MetricWindow): ErrorStats | undefined {
   return mm?.errors?.[win];
@@ -85,8 +86,8 @@ export function Metrics({ metricsMap, activeModel, burnIn }: MetricsProps) {
         <thead>
           <tr>
             <th scope="col">Model</th>
-            {METRIC_HELP.map((h) => (
-              <th key={h.abbr} scope="col" className="num"><abbr title={h.name}>{h.abbr}</abbr></th>
+            {METRIC_KEYS.map((h) => (
+              <th key={h} scope="col" className="num"><abbr title={METRIC_DATA_INFO[h].name}>{h}</abbr></th>
             ))}
           </tr>
         </thead>
@@ -119,17 +120,10 @@ export function Metrics({ metricsMap, activeModel, burnIn }: MetricsProps) {
           })}
         </tbody>
       </table>
-      <details className="metrics-help">
-        <summary>What do these metrics mean?</summary>
-        <dl>
-          {METRIC_HELP.map((h) => (
-            <div key={h.abbr}>
-              <dt>{h.abbr} <span className="metrics-help__name">· {h.name}</span></dt>
-              <dd>{h.text}</dd>
-            </div>
-          ))}
-        </dl>
-      </details>
+      <DataGlossary
+        title={"What do these metrics mean?"}
+        dataInfo={METRIC_DATA_INFO}
+      />
     </div>
   );
 }

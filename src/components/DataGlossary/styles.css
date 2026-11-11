@@ -1,0 +1,37 @@
+.glossary-meta {
+  display: block;
+  font-size: 0.8125rem;
+  font-style: italic;
+}
+
+.glossary {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.glossary summary {
+  cursor: pointer;
+  color: var(--brand);
+  width: fit-content;
+}
+
+.glossary dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+}
+
+.glossary dt {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.glossary-name {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.glossary dd {
+  margin: 0.15rem 0 0;
+}

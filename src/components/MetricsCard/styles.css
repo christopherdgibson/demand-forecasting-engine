@@ -78,35 +78,3 @@
   text-underline-offset: 0.25em;
   cursor: help;
 }
-
-.metrics-help {
-  margin-top: 0.75rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}
-
-.metrics-help summary {
-  cursor: pointer;
-  color: var(--brand);
-  width: fit-content;
-}
-
-.metrics-help dl {
-  display: grid;
-  gap: 0.75rem;
-  margin: 0.75rem 0 0;
-}
-
-.metrics-help dt {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.metrics-help__name {
-  font-weight: 400;
-  color: var(--text-muted);
-}
-
-.metrics-help dd {
-  margin: 0.15rem 0 0;
-}

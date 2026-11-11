@@ -9,6 +9,7 @@ import { SegmentedControl } from '../components/SegmentedControl';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { ErrorModal } from '../components/ErrorModal';
 import { InstructionsCard } from '../components/InstructionsCard';
+import { DataGlossary } from '../components/DataGlossary';
 import { ControlPanel } from '../components/Controls';
 import { ForecastChart } from '../components/ForecastChart';
 import { ForecastOverlayChart } from '../components/ForecastOverlayChart';
@@ -25,6 +26,7 @@ import type {
   CardInputs,
   CsvCustomInputs,
   CsvLoadInputs,
+  DataInfo,
   DataNote,
   ErrorMessage,
   ForecastChartInputs,
@@ -41,8 +43,8 @@ import type {
 
 const SAMPLE_DATA_NAMES = ['RSXFSN', 'RSAFSNA', 'ECOMPCTNSA'] as const;
 
-export type SampleDataKey = typeof SAMPLE_DATA_NAMES[number];
-export type DataInputKey = SampleDataKey | 'custom';
+type SampleDataKey = typeof SAMPLE_DATA_NAMES[number];
+type DataInputKey = SampleDataKey | 'custom';
 
 const DEFAULT_CSV_INPUTS: CsvLoadInputs = {
   source: 'RSXFSN.csv',
@@ -52,11 +54,26 @@ const DEFAULT_CSV_INPUTS: CsvLoadInputs = {
   freq: 'MS'
 }
 
-const SAMPLE_DATA_LABELS: Record<SampleDataKey, string> = {
-  RSXFSN: 'FRED Retail Data', // Advance Retail Sales: Retail Trade (NSA)
-  RSAFSNA: 'FRED Retail and Food Data', // Advance Retail Sales: Retail Trade and Food Services (NSA)
-  ECOMPCTNSA: 'FRED E-Commerce Data', // E-Commerce Retail Sales as a Percent of Total Sales (NSA)
-}
+const SAMPLE_DATASET_INFO: Record<SampleDataKey, DataInfo> = {
+  RSXFSN: {
+    name: 'Advance Retail Sales: Retail Trade',
+    frequency: 'Monthly',
+    unit: 'Millions of dollars',
+    text: 'Monthly sales of retail stores from the U.S. Census Bureau, from 1992. Excludes restaurants and bars. Not seasonally adjusted, so the seasonal pattern the models learn is the real one.'
+  },
+  RSAFSNA: {
+    name: 'Advance Retail Sales: Retail Trade and Food Services',
+    frequency: 'Monthly',
+    unit: 'Millions of dollars',
+    text: 'The same retail series plus food services and drinking places. Larger and a little smoother, which makes it a useful comparison with the retail-only series. Not seasonally adjusted.'
+  },
+  ECOMPCTNSA: {
+    name: 'E-Commerce Retail Sales as a Percent of Total Sales',
+    frequency: 'Quarterly',
+    unit: 'Percent',
+    text: 'The share of retail sales made online, from late 1999. A steadily rising share rather than a sales total, so it shows trend-dominated behaviour with weaker seasonality. Not seasonally adjusted.'
+  }
+} as const;
 
 const SAMPLE_FREQ_MAP: Record<DataInputKey, string> = {
   RSXFSN: 'MS',
@@ -177,7 +194,7 @@ export default function App() {
   );
 
   const activeFileName = useMemo(
-    () => selectedSampleData === 'custom' ? customCsvData.filename : `${SAMPLE_DATA_LABELS[selectedSampleData]}: ${selectedSampleData}.csv`,
+    () => selectedSampleData === 'custom' ? customCsvData.filename : `${SAMPLE_DATASET_INFO[selectedSampleData].name} · ${selectedSampleData}.csv`,
     [activeModelInputs]
   );
 
@@ -375,10 +392,14 @@ export default function App() {
                     }}
                   >
                     {SAMPLE_DATA_NAMES.map(n => (
-                      <option key={n} value={n}>{SAMPLE_DATA_LABELS[n]}</option>
+                      <option key={n} value={n}>{n} · {SAMPLE_DATASET_INFO[n].name}</option>
                     ))}
                     {customCsvData.filename.length > 0 && <option value='custom'>Custom Data: {customCsvData.filename}</option>}
                   </select>
+                  <DataGlossary
+                    title={"About sample datasets"}
+                    dataInfo={SAMPLE_DATASET_INFO}
+                  />
                 </div>
               </div>
             </div>

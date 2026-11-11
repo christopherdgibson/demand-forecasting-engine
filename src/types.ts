@@ -45,6 +45,13 @@ export interface CardInputs {
   step?: number;
 }
 
+export interface DataInfo {
+  name: string;
+  frequency?: string;
+  unit?: string;
+  text: string;
+}
+
 export interface DataNote {
   code: string;
   message: string;
