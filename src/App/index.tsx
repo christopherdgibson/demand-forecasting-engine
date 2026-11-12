@@ -308,7 +308,7 @@ export default function App() {
     <ErrorBoundary>
       <div className={'app-container'}>
         <div className={'app-header'}>
-          <h1 className={'title'}>Demand Forecast Engine</h1>
+          <h1 className={'title'}>Demand Forecasting Engine</h1>
           <div className="app-header-controls">
             <HuePicker value={hues} activePreset={activePreset} onChange={setHues} />
             <SegmentedControl
@@ -428,8 +428,6 @@ export default function App() {
           </div>
         </div>
 
-        <Metrics metricsMap={metricsMap} activeModel={activeModel} burnIn={returnBurnIn(activeModelInputs?.freq)}/>
-
         {chartData && (
           <>
             <h2 className={'section-heading'}>Model Parameters</h2>
@@ -449,6 +447,8 @@ export default function App() {
             </div>
           </>
         )}
+
+        <Metrics metricsMap={metricsMap} activeModel={activeModel} burnIn={returnBurnIn(activeModelInputs?.freq)}/>
         
         {/* Active Chart Tab Navigation */}
         <div className={`${activeChartTab}`}>
