@@ -454,20 +454,23 @@ export default function App() {
         <div className={`${activeChartTab}`}>
           <div className="nav-tabs">
             <button
-              onClick={() => setActiveChartTab('forecast')}
               className={`tab-btn ${activeChartTab === 'forecast' ? 'active' : ''}`}
+              onClick={() => setActiveChartTab('forecast')}
+              disabled={isRunning || isLoading}
             >
               Demand Forecast
             </button>
             <button
-              onClick={() => setActiveChartTab('ci-overlay')}
               className={`tab-btn ${activeChartTab === 'ci-overlay' ? 'active' : ''}`}
+              onClick={() => setActiveChartTab('ci-overlay')}
+              disabled={isRunning || isLoading}
             >
               Forecast Overlay
             </button>
             <button
-              onClick={() => setActiveChartTab('show-all')}
               className={`tab-btn ${activeChartTab === 'show-all' ? 'active' : ''}`}
+              onClick={() => setActiveChartTab('show-all')}
+              disabled={isRunning || isLoading}
             >
               Show All
             </button>
